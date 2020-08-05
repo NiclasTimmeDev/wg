@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const uuid = require("uuid");
 
 const groupSchema = new mongoose.Schema({
   creator: {
@@ -41,6 +42,11 @@ const groupSchema = new mongoose.Schema({
       },
     },
   ],
+  entryCode: {
+    type: String,
+    required: true,
+    default: uuid.v4(),
+  },
 });
 
 const Group = mongoose.model("groups", groupSchema);
