@@ -16,9 +16,9 @@ const Wrapper = styled.div`
 const Input = styled.input`
   background-color: transparent;
   border: ${(props) =>
-    props.error ? "2px solid red" : props.theme.slightGrey};
+    props.error ? "3px solid red" : `3px solid ${props.theme.slightGrey}`};
   border-radius: ${(props) => props.theme.borderRadiusMedium};
-  padding: 5px;
+  padding: ${(props) => props.theme.paddingMini};
   width: 100%;
   margin-bottom: ${(props) => (props.error ? "1px" : props.theme.marginText)};
 `;
@@ -76,4 +76,4 @@ FormGroup.propTypes = {
   onChange: PropTypes.any,
 };
 
-export default FormGroup;
+export { FormGroup };

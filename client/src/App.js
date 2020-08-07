@@ -9,10 +9,13 @@ import { Provider } from "react-redux";
 
 // Components.
 import Navbar from "./components/navigation/Navbar";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
 
 // Styles
 import { ThemeProvider } from "styled-components";
 import "./styles/App.css";
+import "./styles/bootstrap-grid.min.css";
 import theme from "./styles/theme";
 
 function App() {
@@ -22,6 +25,10 @@ function App() {
         <Fragment>
           <Router>
             <Navbar />
+            <Switch>
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
+            </Switch>
           </Router>
         </Fragment>
       </Provider>

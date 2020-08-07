@@ -6,6 +6,7 @@ export default {
   primaryCTA: "#0A7EFA",
   light: "#59A9FF",
   lightGrey: "#707070",
+  fontColor: "#434343",
 
   //white space
   paddingLarge: "70px",
@@ -29,4 +30,7 @@ export default {
   following: "20px",
   minor: "12px",
   muted: "8px",
+
+  // Breakpoints
+  mobile: "576px",
 };

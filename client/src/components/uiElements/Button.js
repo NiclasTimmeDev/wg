@@ -10,6 +10,8 @@ const Btn = styled.button`
   padding: 5px 10px;
   border: none;
   font-size: ${(props) => props.theme.following};
+  font-weight: bold;
+  color: #fff;
   cursor: pointer;
   transition: background-color 0.3s linear;
   &:focus {
@@ -17,6 +19,13 @@ const Btn = styled.button`
   }
 `;
 
+const PrimaryBtn = styled(Btn)`
+  background-color: ${(props) => props.theme.primaryCTA};
+  &:hover {
+    background-color: ${(props) => props.theme.dark};
+  }
+  width: ${(props) => props.fullWidth && "100%"};
+`;
 /**
  * Primary Button
  *
@@ -27,14 +36,6 @@ const Btn = styled.button`
  * @prop {Mixed} children
  *   The child elements of the button.
  */
-const PrimaryBtn = styled(Btn)`
-  background-color: ${(props) => props.theme.primaryCTA};
-  &:hover {
-    background-color: #7fe6ba;
-  }
-  width: ${(props) => props.fullWidth && "100%"};
-`;
-
 const PrimaryButton = (props) => {
   return (
     <PrimaryBtn type={props.type} fullWidth={props.fullWidth}>
