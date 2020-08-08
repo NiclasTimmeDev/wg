@@ -1,16 +1,23 @@
+// NPM packages
 const express = require("express");
-const router = express.Router();
-const auth = require("./../../middleware/auth");
-const helperFunctions = require("../../helpers/helperFunctions");
-const Group = require("../../models/Group");
-const User = require("./../../models/User");
 const cookieParser = require("cookie-parser");
 const validator = require("validator");
 const uuid = require("uuid");
-const mailService = require("./../../services/mail/mail");
-const mail = require("./../../services/mail/mail");
-router.use(cookieParser());
 
+// Models.
+const Group = require("../../models/Group");
+const User = require("./../../models/User");
+
+// Helpers & Services.
+const mailService = require("./../../services/mail/mail");
+const helperFunctions = require("../../helpers/helperFunctions");
+
+// Middleware.
+const auth = require("./../../middleware/auth");
+
+// Init router.
+const router = express.Router();
+router.use(cookieParser());
 /**
  * Create a new group
  *

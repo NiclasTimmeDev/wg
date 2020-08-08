@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 
 module.exports = {
   sendServerErrorMsg: (res, error) => {
-    console.log(error.message);
     if (error.kind == "ObjectId") {
       return res.status(404).send({ errors: [{ msg: "Object not found." }] });
     }
@@ -12,12 +11,12 @@ module.exports = {
   },
   sendCustom400Error: (res, msg) => {
     return res.status(400).send({
-      error: [{ msg: msg }],
+      errors: [{ msg: msg }],
     });
   },
   custom404Error: (res, msg) => {
     return res.status(404).send({
-      error: [{ msg: msg }],
+      errors: [{ msg: msg }],
     });
   },
   signToken: (tokenPayload) => {

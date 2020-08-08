@@ -8,6 +8,7 @@ import store from "./redux/store";
 import { Provider } from "react-redux";
 
 // Components.
+import Alert from "./components/uiElements/Alert";
 import Navbar from "./components/navigation/Navbar";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
@@ -24,6 +25,7 @@ function App() {
       <Provider store={store}>
         <Fragment>
           <Router>
+            <Alert />
             <Navbar />
             <Switch>
               <Route path="/login" component={Login} />

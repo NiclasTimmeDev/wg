@@ -1,28 +1,27 @@
+// NPM packages.
 const express = require("express");
-const router = new express.Router();
-const User = require("./../../models/User");
-const RestorePassword = require("./../../models/RestorePassword");
 const cookieParser = require("cookie-parser");
 const validator = require("validator");
 const jwt = require("jsonwebtoken");
-const auth = require("./../../middleware/auth");
 const bcrypt = require("bcryptjs");
 const uuid = require("uuid");
 
+// Models.
+const User = require("./../../models/User");
+const RestorePassword = require("./../../models/RestorePassword");
+
+// Middleware.
+const auth = require("./../../middleware/auth");
+
+// Helpers & services.
 const helperFunctions = require("./../../helpers/helperFunctions");
 const mail = require("./../../services/mail/mail");
 const userService = require("./../../services/users/users");
 
+// Init router.
+const router = new express.Router();
 router.use(cookieParser());
 
-/*======================================
-REGISTER
-@Route: /api/users/register
-@Method: POST
-@Access: Public
-@Response: token
-@Required request data: username, email, password1, password2
-======================================*/
 /**
  * REGISTRATION
  *
@@ -35,32 +34,31 @@ REGISTER
  * @param {String} password1
  * @param {String} password2
  *
- * @return token
+ * @return {String} token
  */
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password1, password2 } = req.body;
-
     // Return if no username provided.
     if (username === "") {
-      return helperFunctions.sendCustom400Error(res, "Please enter a username");
+      return helperFunctions.sendCustom400Error(res, {
+        username: "Please enter a username",
+      });
     }
 
     // Return if email invalid.
     if (!validator.isEmail(email)) {
-      return helpers.sendCustom400Error(
-        res,
-        "Please enter a valid email address."
-      );
+      return helperFunctions.sendCustom400Error(res, {
+        email: "Please enter a valid email address.",
+      });
     }
 
-    // Error is username is taken.
+    // Error email is taken.
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return helpers.sendCustom400Error(
-        res,
-        "Sorry, this email address is already taken."
-      );
+      return helperFunctions.sendCustom400Error(res, {
+        email: "Sorry, this email address is already taken.",
+      });
     }
 
     // Call helper function to validate password
@@ -71,7 +69,9 @@ router.post("/register", async (req, res) => {
 
     // Return if password validation returned error.
     if (!passwordValidation[0]) {
-      return helperFunctions.sendCustom400Error(res, passwordValidation[1]);
+      return helperFunctions.sendCustom400Error(res, {
+        password: passwordValidation[1],
+      });
     }
 
     // Create new User.
@@ -106,7 +106,7 @@ router.post("/register", async (req, res) => {
       .cookie("token", token, { httpOnly: true, maxAge: 3600 })
       .send(token);
   } catch (error) {
-    helpers.sendServerErrorMsg(res, error);
+    helperFunctions.sendServerErrorMsg(res, error);
   }
 });
 
