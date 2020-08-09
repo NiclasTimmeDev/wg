@@ -16,7 +16,16 @@ const auth = (state = initState, action) => {
         ...state,
         fetchInProgress: true,
       };
-    case types.REGISTER_SUCCESS:
+    case types.LOAD_USER_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        authenticated: true,
+        errors: {},
+        user: action.payload,
+        fetchInProgress: false,
+      };
+    case (types.REGISTER_SUCCESS, types.LOGIN_SUCCESS):
       return {
         ...state,
         loading: false,
@@ -25,7 +34,7 @@ const auth = (state = initState, action) => {
         errors: {},
         fetchInProgress: false,
       };
-    case types.REGISTER_ERROR:
+    case (types.REGISTER_ERROR, types.LOAD_USER_ERROR, types.LOGIN_ERROR):
       return {
         ...state,
         loading: false,
@@ -35,6 +44,7 @@ const auth = (state = initState, action) => {
         errors: action.payload,
         fetchInProgress: false,
       };
+
     default:
       return initState;
   }

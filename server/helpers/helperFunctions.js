@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 module.exports = {
   sendServerErrorMsg: (res, error) => {
@@ -21,7 +22,7 @@ module.exports = {
   },
   signToken: (tokenPayload) => {
     return jwt.sign(tokenPayload, process.env.JWTSECRET, {
-      expiresIn: "216000",
+      expiresIn: 86400000,
     });
   },
 };

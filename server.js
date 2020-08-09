@@ -1,9 +1,34 @@
 require("dotenv").config();
-require("./server/config/database");
+const connect = require("./server/config/database");
 const express = require("express");
 const app = express();
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
+
+//initializePassport(passport);
 
 // Init middleware.
+app.use(cookieParser());
+app.use(
+  session({
+    name: process.env.SESSION_ID,
+    saveUninitialized: false,
+    resave: false,
+    secret: process.env.SESSION_SECRET,
+    store: new MongoStore({
+      url: process.env.mongoURI,
+      collection: "sessions",
+    }),
+    cookie: {
+      maxAge: 86400000,
+      sameSite: true,
+      secure: false,
+      httpOnly: true,
+    },
+  })
+);
+
 app.use(express.json({ extended: false }));
 
 // Declare routes.

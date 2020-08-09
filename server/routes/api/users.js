@@ -5,6 +5,7 @@ const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const uuid = require("uuid");
+const session = require("express-session");
 
 // Models.
 const User = require("./../../models/User");
@@ -101,10 +102,8 @@ router.post("/register", async (req, res) => {
     await newUser.save();
 
     // Send token to client.
-    res
-      .status(201)
-      .cookie("token", token, { httpOnly: true, maxAge: 3600 })
-      .send(token);
+    req.session.accessToken = token;
+    res.status(201).send(token);
   } catch (error) {
     helperFunctions.sendServerErrorMsg(res, error);
   }
@@ -117,58 +116,60 @@ router.post("/register", async (req, res) => {
  * @Method POST
  * @Access Public
  *
- *
  * @param {String} email
  * @param {String} password
  *
  * @return {String} token
  */
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  // Return if email is invalid.
-  if (!validator.isEmail(email)) {
-    return helperFunctions.sendCustom400Error(
-      res,
-      "Please provide a valid email address."
-    );
+    // Return if email is invalid.
+    if (!validator.isEmail(email)) {
+      return helperFunctions.sendCustom400Error(
+        res,
+        "Please provide a valid email address."
+      );
+    }
+
+    // Return if password is empty.
+    if (password === "") {
+      return helperFunctions.sendCustom400Error(res, "Please enter a password");
+    }
+
+    // Return if user user could not be found or password does not match.
+    const user = await User.findByCredentials(email, password);
+    if (!user) {
+      return helperFunctions.custom404Error(
+        res,
+        "Invalid credentials. Please try again."
+      );
+    }
+
+    // Sign token.
+    const tokenpayload = {
+      user: {
+        _id: user._id,
+      },
+    };
+    const token = helperFunctions.signToken(tokenpayload);
+
+    // Return if token signing failed.
+    if (!token) {
+      return helperFunctions.sendServerErrorMsg(
+        res,
+        "Sorry, something went wrong. Please try again later."
+      );
+    }
+
+    // Put token into session.
+    req.session.accessToken = token;
+
+    res.status(200).send(token);
+  } catch (error) {
+    return helperFunctions.sendServerErrorMsg(res.error);
   }
-
-  // Return if password is empty.
-  if (password === "") {
-    return helperFunctions.sendCustom400Error(res, "Please enter a password");
-  }
-
-  // Return if user user could not be found or password does not match.
-  const user = await User.findByCredentials(email, password);
-  if (!user) {
-    return helperFunctions.custom404Error(
-      res,
-      "Invalid credentials. Please try again."
-    );
-  }
-
-  // Sign token.
-  const tokenpayload = {
-    user: {
-      _id: user._id,
-    },
-  };
-  const token = helperFunctions.signToken(tokenpayload);
-
-  // Return if token signing failed.
-  if (!token) {
-    return helperFunctions.sendServerErrorMsg(
-      res,
-      "Sorry, something went wrong. Please try again later."
-    );
-  }
-
-  // Return token.
-  res
-    .status(201)
-    .cookie("token", token, { httpOnly: true, maxAge: 3600 })
-    .send(token);
 });
 
 /**
@@ -287,8 +288,9 @@ router.patch("/update", auth, async (req, res) => {
  */
 router.post("/logout", auth, async (req, res) => {
   try {
-    if (req.cookies.token) {
-      res.status(200).clearCookie("token").send("Logged out");
+    if (req.session) {
+      req.session.destroy();
+      res.status(200).send();
     }
   } catch (error) {
     helperFunctions.sendServerErrorMsg(res, error);
@@ -308,6 +310,9 @@ router.delete("/delete", auth, async (req, res) => {
   try {
     const _id = req.user;
     await User.deleteOne({ _id });
+
+    // Destroy session.
+    req.session.destroy();
     res.status(200).send("User deleted");
   } catch (error) {
     helperFunctions.sendServerErrorMsg(res, error);

@@ -13,6 +13,9 @@ import { SpinnerFullPage } from "./../uiElements/Spinner";
 import { connect } from "react-redux";
 import { register } from "./../../redux/actions/auth";
 
+// Routing
+import { Redirect } from "react-router-dom";
+
 // Styling.
 const Container = styled.div.attrs((props) => ({
   className: props.class,
@@ -60,6 +63,11 @@ const Register = (props) => {
       formData.passwordConfirmed
     );
   };
+
+  // Redirect if user is autheticated.
+  if (props.authenticated) {
+    return <Redirect to="/todolist" />;
+  }
 
   const deviceWidth = window.innerWidth;
   // Mobilew view
